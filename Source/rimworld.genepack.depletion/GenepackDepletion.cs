@@ -4,53 +4,109 @@ using Verse;
 using System.Collections.Generic;
 using System.Linq;
 using Verse.AI;
+using UnityEngine;
+using System;
 
 namespace rimworld.genepack.depletion
 {
-    [StaticConstructorOnStartup]
-    public static class GenepackDepletion
+    //[StaticConstructorOnStartup]
+    public class GenepackDepletion : Mod
     {
-        static GenepackDepletion()
+        private static GenepackDepletionSettings settings;
+
+        public GenepackDepletion(ModContentPack content) : base(content)
         {
+
+            settings = GetSettings<GenepackDepletionSettings>();
             Log.Message("GenepackDepletion loaded");
             var harmonyInstance = new Harmony("rimworld.genepack.depletion");
             harmonyInstance.Patch(AccessTools.Method(typeof(Building_GeneAssembler), "Finish"),
                    new HarmonyMethod(typeof(GenepackDepletion), "Finish_Postfix"));
+        }
 
-            //harmonyInstance.Patch(AccessTools.Method(typeof(JobDriver_CreateXenogerm), "MakeNewToils"),
-            //       new HarmonyMethod(typeof(GenepackDepletion), "MakeNewToils_Postfix"));
+        public override void DoSettingsWindowContents(Rect inRect)
+        {
+            Listing_Standard listingStandard = new Listing_Standard();
+            listingStandard.Begin(inRect);
+            listingStandard.Label("rimworld.genepack.depletion.depletionPerComplexity".Translate());
+            listingStandard.Label(settings.minDepletionPerComplexity + " - " + settings.maxDepletionPerComplexity);
+            listingStandard.Label("rimworld.genepack.depletion.minValue".Translate());
+            settings.minDepletionPerComplexity = (int)Math.Round(listingStandard.Slider(settings.minDepletionPerComplexity, 0f, 100f));
+            listingStandard.Label("rimworld.genepack.depletion.maxValue".Translate());
+            settings.maxDepletionPerComplexity = (int)Math.Round(listingStandard.Slider(settings.maxDepletionPerComplexity, 0f, 100f));
+            listingStandard.CheckboxLabeled("applyEvenly", ref settings.applyEvenly, "applyEvenly");
+            listingStandard.End();
+            base.DoSettingsWindowContents(inRect);
+        }
+
+        public override string SettingsCategory()
+        {
+            return "rimworld.genepack.depletion.title".Translate();
         }
 
         static void Finish_Postfix(Building_GeneAssembler __instance)
         {
             Log.Message("GeneAssembler Finished");
             List<Genepack> genepacks = __instance.GetGenepacks(true, true);
+
+            if (genepacks.NullOrEmpty()) return;
+
             int totalComplexity = genepacks.Sum(x => x.GeneSet.ComplexityTotal);
             Log.Message("Total complexity: " + totalComplexity);
 
-            Pawn pawn = __instance.GetAssignedPawn();
-            if (pawn != null)
+            Log.Message("applyEvenly: " + settings.applyEvenly);
+
+            Log.Message("minDepletionPerComplexity: " + settings.minDepletionPerComplexity);
+            Log.Message("maxDepletionPerComplexity: " + settings.maxDepletionPerComplexity);
+            int totalDepletion = randomDepletion();
+            if(__instance.MaxHitPoints > 0)
             {
-                Log.Message("Assigned Pawn" + pawn.Name.ToStringFull);
+                totalDepletion = totalDepletion * (__instance.MaxHitPoints - __instance.HitPoints) / __instance.MaxHitPoints;
+            }
+
+            Log.Message("totalDepletion: " + totalDepletion);
+
+            if (settings.applyEvenly)
+            {
+
+                int depeltionAmount = totalDepletion / totalComplexity;
+                genepacks.ForEach((x) =>
+                {
+                    x.HitPoints -= depeltionAmount;
+                    Log.Message(x.Label + ", " + x.HitPoints + " of " + x.MaxHitPoints + "; " + x.GeneSet.ComplexityTotal);
+                });
             }
             else
             {
-                Log.Message("No Pawn");
+                Log.Message("randomizingDepeltion");
+                List<Genepack> randomList = new List<Genepack>();
+
+                genepacks.ForEach(genepack =>
+                {
+                    for (int i = 0; i < genepack.GeneSet.ComplexityTotal + 1; i++)
+                    {
+                        randomList.Add(genepack);
+                    }
+                });
+
+                Log.Message("listLength: " + randomList.Count);
+                for (; totalDepletion >= 0; totalDepletion--)
+                {
+                    int index = UnityEngine.Random.Range(0, randomList.Count);
+                    randomList[index].HitPoints--;
+                    Log.Message("Reducing: " + randomList[index].Label + " to " + randomList[index].HitPoints + " - " + totalDepletion);
+                }
+
+                genepacks.ForEach((x) =>
+                {
+                    Log.Message(x.Label + ", " + x.HitPoints + " of " + x.MaxHitPoints + "; " + x.GeneSet.ComplexityTotal);
+                });
             }
-
-            genepacks.ForEach((x) =>
-            {
-                x.HitPoints -= 10;
-                Log.Message(x.Label + ", " + x.HitPoints + " of " + x.MaxHitPoints + "; " + x.GeneSet.ComplexityTotal);
-            });
-
         }
 
-        static void MakeNewToils_Postfix(JobDriver_CreateXenogerm __instance, ref IEnumerable<Toil> __result)
+        private static int randomDepletion()
         {
-            Log.Message("MakeNewToils_Postfix");
-            Log.Message("Assigned Pawn: " + __instance.pawn.Name.ToStringFull);
-            Log.Message("Results: " +__result.GetType().FullName);
+            return UnityEngine.Random.Range(settings.minDepletionPerComplexity, settings.maxDepletionPerComplexity);
         }
     }
 }

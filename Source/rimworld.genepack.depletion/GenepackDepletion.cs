@@ -59,12 +59,14 @@ namespace rimworld.genepack.depletion
             Log.Message("minDepletionPerComplexity: " + settings.minDepletionPerComplexity);
             Log.Message("maxDepletionPerComplexity: " + settings.maxDepletionPerComplexity);
             int totalDepletion = randomDepletion();
-            if(__instance.MaxHitPoints > 0)
+            if (__instance.MaxHitPoints > 0)
             {
-                totalDepletion = totalDepletion * (__instance.MaxHitPoints - __instance.HitPoints) / __instance.MaxHitPoints;
+                totalDepletion = totalDepletion * (1 + (__instance.MaxHitPoints - __instance.HitPoints) / __instance.MaxHitPoints);
             }
 
             Log.Message("totalDepletion: " + totalDepletion);
+
+            if (totalDepletion == 0) return;
 
             if (settings.applyEvenly)
             {
@@ -90,7 +92,7 @@ namespace rimworld.genepack.depletion
                 });
 
                 Log.Message("listLength: " + randomList.Count);
-                for (; totalDepletion >= 0; totalDepletion--)
+                for (; totalDepletion > 0; totalDepletion--)
                 {
                     int index = UnityEngine.Random.Range(0, randomList.Count);
                     randomList[index].HitPoints--;

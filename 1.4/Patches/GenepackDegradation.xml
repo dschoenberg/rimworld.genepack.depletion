@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!--
+  <WorkGiverDef>
+    <defName>CreateXenogerm</defName>
+    <label>create xenogerm</label>
+    <giverClass>WorkGiver_CreateXenogerm</giverClass>
+    <workType>Research</workType>
+    <verb>create xenogerm</verb>
+    <gerund>creating xenogerm at</gerund>
+    <priorityInType>120</priorityInType>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+  </WorkGiverDef> 
+  -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/WorkGiverDef[defName = "CreateXenogerm"]/gerund</xpath>
+    <value>
+      <gerund>creating xenogerm using</gerund>
+    </value>
+  </Operation>
+  <!-- 
+  <JobDef>
+    <defName>CreateXenogerm</defName>
+    <driverClass>JobDriver_CreateXenogerm</driverClass>
+    <reportString>creating xenogerm.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+ -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/JobDef[defName = "CreateXenogerm"]/reportString</xpath>
+    <value>
+      <reportString>creating xenogerm!</reportString>
+    </value>
+  </Operation>
+</Patch>

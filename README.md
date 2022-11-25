@@ -1,0 +1,1 @@
+# rimworld.genepack.degradation

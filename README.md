@@ -1,1 +1,1 @@
-# rimworld.genepack.degradation
+# rimworld.genepack.depletion

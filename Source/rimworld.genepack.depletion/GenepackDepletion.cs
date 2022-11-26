@@ -18,7 +18,6 @@ namespace rimworld.genepack.depletion
         {
 
             settings = GetSettings<GenepackDepletionSettings>();
-            Log.Message("GenepackDepletion loaded");
             var harmonyInstance = new Harmony("rimworld.genepack.depletion");
             harmonyInstance.Patch(AccessTools.Method(typeof(Building_GeneAssembler), "Finish"),
                    new HarmonyMethod(typeof(GenepackDepletion), "Finish_Postfix"));
@@ -34,7 +33,7 @@ namespace rimworld.genepack.depletion
             settings.minDepletionPerComplexity = (int)Math.Round(listingStandard.Slider(settings.minDepletionPerComplexity, 0f, 100f));
             listingStandard.Label("rimworld.genepack.depletion.maxValue".Translate());
             settings.maxDepletionPerComplexity = (int)Math.Round(listingStandard.Slider(settings.maxDepletionPerComplexity, 0f, 100f));
-            listingStandard.CheckboxLabeled("applyEvenly", ref settings.applyEvenly, "applyEvenly");
+            listingStandard.CheckboxLabeled("applyEvenly", ref settings.applyEvenly, "rimworld.genepack.depletion.applyEvenly");
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
         }
@@ -44,27 +43,17 @@ namespace rimworld.genepack.depletion
             return "rimworld.genepack.depletion.title".Translate();
         }
 
-        static void Finish_Postfix(Building_GeneAssembler __instance)
+        private static void Finish_Postfix(Building_GeneAssembler __instance)
         {
-            Log.Message("GeneAssembler Finished");
             List<Genepack> genepacks = __instance.GetGenepacks(true, true);
-
             if (genepacks.NullOrEmpty()) return;
 
             int totalComplexity = genepacks.Sum(x => x.GeneSet.ComplexityTotal);
-            Log.Message("Total complexity: " + totalComplexity);
-
-            Log.Message("applyEvenly: " + settings.applyEvenly);
-
-            Log.Message("minDepletionPerComplexity: " + settings.minDepletionPerComplexity);
-            Log.Message("maxDepletionPerComplexity: " + settings.maxDepletionPerComplexity);
-            int totalDepletion = randomDepletion();
+            int totalDepletion = UnityEngine.Random.Range(settings.minDepletionPerComplexity, settings.maxDepletionPerComplexity) * totalComplexity;
             if (__instance.MaxHitPoints > 0)
             {
                 totalDepletion = totalDepletion * (1 + (__instance.MaxHitPoints - __instance.HitPoints) / __instance.MaxHitPoints);
             }
-
-            Log.Message("totalDepletion: " + totalDepletion);
 
             if (totalDepletion == 0) return;
 
@@ -75,12 +64,10 @@ namespace rimworld.genepack.depletion
                 genepacks.ForEach((x) =>
                 {
                     x.HitPoints -= depeltionAmount;
-                    Log.Message(x.Label + ", " + x.HitPoints + " of " + x.MaxHitPoints + "; " + x.GeneSet.ComplexityTotal);
                 });
             }
             else
             {
-                Log.Message("randomizingDepeltion");
                 List<Genepack> randomList = new List<Genepack>();
 
                 genepacks.ForEach(genepack =>
@@ -91,24 +78,20 @@ namespace rimworld.genepack.depletion
                     }
                 });
 
-                Log.Message("listLength: " + randomList.Count);
                 for (; totalDepletion > 0; totalDepletion--)
                 {
                     int index = UnityEngine.Random.Range(0, randomList.Count);
                     randomList[index].HitPoints--;
-                    Log.Message("Reducing: " + randomList[index].Label + " to " + randomList[index].HitPoints + " - " + totalDepletion);
                 }
-
-                genepacks.ForEach((x) =>
-                {
-                    Log.Message(x.Label + ", " + x.HitPoints + " of " + x.MaxHitPoints + "; " + x.GeneSet.ComplexityTotal);
-                });
             }
-        }
 
-        private static int randomDepletion()
-        {
-            return UnityEngine.Random.Range(settings.minDepletionPerComplexity, settings.maxDepletionPerComplexity);
+            genepacks.ForEach((x) =>
+            {
+                if (x.HitPoints <= 0)
+                {
+                    x.Destroy();
+                }
+            });
         }
     }
 }

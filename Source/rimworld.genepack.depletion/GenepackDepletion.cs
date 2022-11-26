@@ -87,7 +87,7 @@ namespace rimworld.genepack.depletion
 
             genepacks.ForEach((x) =>
             {
-                if (x.HitPoints <= 0)
+                if (!x.Destroyed && x.HitPoints <= 0)
                 {
                     x.Destroy();
                 }

@@ -2,7 +2,7 @@
 <ModMetaData>
 	<name>Genepack Depletion</name>
 	<author>PoorImpulseControl</author>
-	<description><![CDATA[
+	<description>
     This mod updates the xenogerm creation process, depleting the genepacks used based on the overall xenogerm complexity.  
 	You'll need to weigh your options a bit more carefully when creating new xenogerms and keep a few backup genepacks on hand, even if they are less than ideal.
 
@@ -14,10 +14,7 @@
 		- Vary the amount of depletion based on the crafting pawn's attributes.
 		- Surface genepack status when selecting genepacks to combine.
 		- Add technology to limit the depletion.
-
-	GitHub: https://github.com/dschoenberg/rimworld.genepack.depletion
-
-		]]>	</description>
+	</description>
 	<supportedVersions>
 		<li>1.4</li>
 	</supportedVersions>

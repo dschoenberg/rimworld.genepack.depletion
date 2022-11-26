@@ -6,11 +6,14 @@
     This mod update the xenogerm creation process, depleting the genepacks used based on the overall complexity.  
 	The idea is to make the genepack selection process require more care and thought while also adding value to having "backup" genepacks, even if they are less than ideal.
 
+	By default you will lose between 15-25% of a genepack per point of complexity, so 
+
 	Settings can be adjusted from the options menu.  This should be safe to add to existing games.
 
 	Future updates:
 		- Vary the amount of depletion based on the crafting pawn's attributes.
 		- Surface genepack status when selecting genepacks to combine.
+		- Add technology to limit the depletion.
 
 	GitHub: https://github.com/dschoenberg/rimworld.genepack.depletion
 

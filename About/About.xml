@@ -3,9 +3,17 @@
 	<name>Genepack Depletion</name>
 	<author>PoorImpulseControl</author>
 	<description><![CDATA[
-    This mod adds a plague gun, a weapon that has a chance to give your enemies the plague.
-	
-	https://github.com/Mehni/ExampleJob/wiki
+    This mod update the xenogerm creation process, depleting the genepacks used based on the overall complexity.  
+	The idea is to make the genepack selection process more impactful and add value to having "backup" genepacks, even if they are less than ideal.
+
+	Settings can be adjusted from the options menu.  This should be safe to add to existing games.
+
+	Future updates:
+		- Vary the amount of depletion based on the crafting pawn's attributes.
+		- Surface genepack status when selecting genepacks to combine.
+
+	GitHub: https://github.com/dschoenberg/rimworld.genepack.depletion
+
 		]]>	</description>
 	<supportedVersions>
 		<li>1.4</li>

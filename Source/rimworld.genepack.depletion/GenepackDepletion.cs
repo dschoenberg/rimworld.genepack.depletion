@@ -19,7 +19,7 @@ namespace rimworld.genepack.depletion
         {
 
             settings = GetSettings<GenepackDepletionSettings>();
-            if (harmonyInstance != null)
+            if (harmonyInstance == null)
             {
                 var harmonyInstance = new Harmony("rimworld.genepack.depletion");
                 harmonyInstance.Patch(AccessTools.Method(typeof(Building_GeneAssembler), "Finish"),

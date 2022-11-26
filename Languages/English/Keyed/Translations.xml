@@ -4,6 +4,7 @@
 	<rimworld.genepack.depletion.title>Genepack Depletion</rimworld.genepack.depletion.title>
 	<rimworld.genepack.depletion.minValue>Min</rimworld.genepack.depletion.minValue>
 	<rimworld.genepack.depletion.maxValue>Max</rimworld.genepack.depletion.maxValue>
-	<rimworld.genepack.depletion.applyEvenly>Apply depletion evenly across genepacks?</rimworld.genepack.depletion.maxValue>
+	<rimworld.genepack.depletion.applyEvenly>Apply depletion evenly across genepacks?</rimworld.genepack.depletion.applyEvenly>
 	<rimworld.genepack.depletion.depletionPerComplexity>Depletion per complexity</rimworld.genepack.depletion.depletionPerComplexity>
+	<rimworld.genepack.depletion.depleted>{0} genepack has been depleted</rimworld.genepack.depletion.depleted>
 </LanguageData>

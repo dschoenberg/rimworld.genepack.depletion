@@ -12,15 +12,19 @@ namespace rimworld.genepack.depletion
     //[StaticConstructorOnStartup]
     public class GenepackDepletion : Mod
     {
+        private static Harmony harmonyInstance = null;
         private static GenepackDepletionSettings settings;
 
         public GenepackDepletion(ModContentPack content) : base(content)
         {
 
             settings = GetSettings<GenepackDepletionSettings>();
-            var harmonyInstance = new Harmony("rimworld.genepack.depletion");
-            harmonyInstance.Patch(AccessTools.Method(typeof(Building_GeneAssembler), "Finish"),
-                   new HarmonyMethod(typeof(GenepackDepletion), "Finish_Postfix"));
+            if (harmonyInstance != null)
+            {
+                var harmonyInstance = new Harmony("rimworld.genepack.depletion");
+                harmonyInstance.Patch(AccessTools.Method(typeof(Building_GeneAssembler), "Finish"),
+                       new HarmonyMethod(typeof(GenepackDepletion), "Finish_Postfix"));
+            }
         }
 
         public override void DoSettingsWindowContents(Rect inRect)
@@ -89,6 +93,7 @@ namespace rimworld.genepack.depletion
             {
                 if (!x.Destroyed && x.HitPoints <= 0)
                 {
+                    Messages.Message("rimworld.genepack.depletion.depleted".Translate(x.Label), MessageTypeDefOf.NeutralEvent);
                     x.Destroy();
                 }
             });
